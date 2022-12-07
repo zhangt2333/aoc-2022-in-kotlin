@@ -1,6 +1,11 @@
 fun main() {
+    fun String.allUnique(): Boolean {
+        val set = mutableSetOf<Char>()
+        return all { set.add(it) }
+    }
+
     fun handle(line: String, size: Int): Int {
-        return size + line.windowed(size).indexOfFirst { it.toSet().size == size }
+        return size + line.windowed(size).indexOfFirst { it.allUnique() }
     }
 
     fun part1(input: String): Int {

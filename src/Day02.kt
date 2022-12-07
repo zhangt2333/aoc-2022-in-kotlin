@@ -48,24 +48,11 @@ enum class Result {
             else -> throw IllegalArgumentException()
         }
 
-        fun of(myHand: HandShape, opponentHand: HandShape): Result = when (myHand) {
-            HandShape.ROCK -> when (opponentHand) {
-                HandShape.ROCK -> DRAW
-                HandShape.PAPER -> LOST
-                HandShape.SCISSOR -> WON
-            }
-
-            HandShape.PAPER -> when (opponentHand) {
-                HandShape.ROCK -> WON
-                HandShape.PAPER -> DRAW
-                HandShape.SCISSOR -> LOST
-            }
-
-            HandShape.SCISSOR -> when (opponentHand) {
-                HandShape.ROCK -> LOST
-                HandShape.PAPER -> WON
-                HandShape.SCISSOR -> DRAW
-            }
+        fun of(myHand: HandShape, opponentHand: HandShape): Result = when (myHand to opponentHand) {
+            HandShape.ROCK to HandShape.SCISSOR, HandShape.PAPER to HandShape.ROCK, HandShape.SCISSOR to HandShape.PAPER -> WON
+            HandShape.ROCK to HandShape.ROCK, HandShape.PAPER to HandShape.PAPER, HandShape.SCISSOR to HandShape.SCISSOR -> DRAW
+            HandShape.ROCK to HandShape.PAPER, HandShape.PAPER to HandShape.SCISSOR, HandShape.SCISSOR to HandShape.ROCK -> LOST
+            else -> throw java.lang.IllegalArgumentException()
         }
     }
 
