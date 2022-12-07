@@ -1,32 +1,29 @@
 fun main() {
+    operator fun IntRange.contains(other: IntRange): Boolean =
+        first <= other.first && other.last <= last
+
+    fun IntRange.overlap(other: IntRange): Boolean =
+        !(other.last < first || last < other.first)
+
     fun part1(input: List<String>): Int {
-        var sum = 0
-        for (line in input) {
-            val (v1,v2,v3,v4) = line.split(",", "-").map(String::toInt)
-            if ((v1 <= v3 && v3 <= v4 && v4 <= v2)
-                || (v3 <= v1 && v1 <= v2 && v2 <= v4)) {
-                sum++
-            }
-        }
-        return sum
+        return input.map {
+            val (l1, r1, l2, r2) = it.split(",", "-").map(String::toInt)
+            Pair(l1..r1, l2..r2)
+        }.count { (a, b) -> a in b || b in a }
     }
 
     fun part2(input: List<String>): Int {
-        var sum = 0
-        for (line in input) {
-            val (v1,v2,v3,v4) = line.split(",", "-").map(String::toInt)
-            if (!(v2 < v3 || v4 < v1)) {
-                sum++
-            }
-        }
-        return sum
+        return input.map {
+            val (l1, r1, l2, r2) = it.split(",", "-").map(String::toInt)
+            Pair(l1..r1, l2..r2)
+        }.count { (a, b) -> a.overlap(b)}
     }
 
-    val testInput = readInput("Day04_test")
+    val testInput = readLines("Day04_test")
     check(part1(testInput) == 2)
     check(part2(testInput) == 4)
 
-    val input = readInput("Day04")
+    val input = readLines("Day04")
     println(part1(input))
     println(part2(input))
 }

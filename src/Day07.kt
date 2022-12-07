@@ -1,70 +1,102 @@
-class TrieNode(
-    val name: String,
-    val parent: TrieNode?,
-    var size: Int = 0,
-    private val files: MutableMap<String, Int> = mutableMapOf(),
-    private val dirs: MutableMap<String, TrieNode> = mutableMapOf(),
-) {
-    fun addFile(name: String, size: Int) {
-        if (files.put(name, size) == null) {
-            updateSize(size)
+internal class FileSystem {
+    val root = Directory("/", null)
+    val allDirectories = mutableListOf<Directory>(root)
+    var currentDir = root
+
+    fun cd(name: String) {
+        currentDir = when (name) {
+            "/" -> root
+            ".." -> currentDir.parent ?: throw IllegalArgumentException()
+            else -> currentDir.getSubDir(name)
         }
     }
 
-    private fun updateSize(delta: Int) {
-        size += delta
-        parent?.updateSize(delta)
+    fun createDir(name: String) {
+        currentDir.children.computeIfAbsent(name) {
+            Directory(name, currentDir).apply { allDirectories.add(this) }
+        }
     }
 
-    fun getDir(name: String): TrieNode? {
-        if (name == "..") {
-            return parent
+    fun createFile(name: String, size: Int) {
+        currentDir.children.computeIfAbsent(name) {
+            updateDirSize(size)
+            File(name, currentDir, size)
         }
-        return dirs.computeIfAbsent(name) { TrieNode(it, this) }
+    }
+
+    private fun updateDirSize(delta: Int) {
+        var curr: Directory? = currentDir
+        while (curr != null) {
+            curr.size += delta
+            curr = curr.parent
+        }
+    }
+
+    sealed interface FileSystemEntry {
+        val name: String
+        val parent: Directory?
+        val size: Int
+    }
+
+    data class Directory(
+        override val name: String,
+        override val parent: Directory?,
+        override var size: Int = 0
+    ): FileSystemEntry {
+        val children = mutableMapOf<String, FileSystemEntry>()
+
+        fun getSubDir(name: String): Directory =
+            children.get(name) as? Directory ?: throw IllegalArgumentException()
+    }
+
+    data class File(
+        override val name: String,
+        override val parent: Directory?,
+        override val size: Int
+    ): FileSystemEntry {
     }
 }
 
 fun main() {
-    fun construct(input: List<String>): Collection<TrieNode> {
-        val allNodes = mutableSetOf<TrieNode>()
-        val root = TrieNode("", null)
-        var curr: TrieNode? = null
+    fun parse(input: List<String>): FileSystem {
+        val fs = FileSystem()
         for (line in input) {
             if (line == "$ ls") {
                 continue
             }
             val subDir = line.substringAfter("$ cd ")
             if (subDir != line) {
-                curr = if (subDir == "/") root else curr?.getDir(subDir)
-                curr?.let { allNodes.add(it) }
+                fs.cd(subDir)
                 continue
             }
             val (typeOrSize, name) = line.split(" ")
-            if (typeOrSize != "dir") {
-                curr?.addFile(name, typeOrSize.toInt())
+            if (typeOrSize == "dir") {
+                fs.createDir(name)
+            } else {
+                fs.createFile(name, typeOrSize.toInt())
             }
         }
-        return allNodes
+        return fs
     }
 
     fun part1(input: List<String>): Int {
-        return construct(input).filter { it.size <= 100000 }.sumOf { it.size }
+        return parse(input).allDirectories.filter { it.size <= 100000 }.sumOf { it.size }
     }
 
     fun part2(input: List<String>): Int {
-        val allNodes = construct(input)
-        val sizeToDelete = allNodes.first().size - 40000000
+        val fs = parse(input)
+        val sizeToDelete = fs.root.size - (70000000 - 30000000)
         if (sizeToDelete <= 0) {
             return 0
         }
-        return allNodes.filter { it.size >= sizeToDelete }.minOf { it.size }
+        return parse(input).allDirectories.filter { it.size >= sizeToDelete }.minOf { it.size }
     }
 
-    val testInput = readInput("Day07_test")
+    val testInput = readLines("Day07_test")
     check(part1(testInput) == 95437)
     check(part2(testInput) == 24933642)
 
-    val input = readInput("Day07")
+    val input = readLines("Day07")
     println(part1(input))
     println(part2(input))
 }

@@ -1,36 +1,38 @@
+import java.util.BitSet
+
 fun main() {
+
+    fun Char.priority(): Int = when (this) {
+        in 'a'..'z' -> this - 'a' + 1
+        in 'A'..'Z' -> this - 'A' + 27
+        else -> throw IllegalArgumentException()
+    }
+
+    fun indexBitSet(items: String) = BitSet(60).apply {
+        items.forEach { this[it.priority()] = true }
+    }
+
     fun part1(input: List<String>): Int {
-        var sum = 0
-        for (line in input) {
-            val visited = BooleanArray(60)
-            for ((index, value) in line.withIndex()) {
-                val v = if (value >= 'a') value - 'a' + 1 else value - 'A' + 27
-                if (index < line.length / 2) {
-                    visited[v] = true
-                } else if (visited[v]) {
-                    sum += v
-                    break
-                }
-            }
+        return input.sumOf {
+            indexBitSet(it.substring(0, it.length / 2)).apply {
+                this.and(indexBitSet(it.substring(it.length / 2)))
+            }.nextSetBit(0)
         }
-        return sum
     }
 
     fun part2(input: List<String>): Int {
-        var sum = 0
-        for (index in input.indices.step(3)) {
-            val c = (input[index].toSet() intersect input[index + 1].toSet()
-                    intersect input[index + 2].toSet()).first()
-            sum += if (c >= 'a') c - 'a' + 1 else c - 'A' + 27
-        }
-        return sum
+        return input.map { indexBitSet(it) }.chunked(3).sumOf { (a, b, c) ->
+                a.and(b)
+                a.and(c)
+                a.nextSetBit(0)
+            }
     }
 
-    val testInput = readInput("Day03_test")
+    val testInput = readLines("Day03_test")
     check(part1(testInput) == 157)
     check(part2(testInput) == 70)
 
-    val input = readInput("Day03")
+    val input = readLines("Day03")
     println(part1(input))
     println(part2(input))
 }
