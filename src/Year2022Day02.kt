@@ -81,11 +81,11 @@ fun main() {
         }
     }
 
-    val testInput = readLines("Day02_test")
-    check(part1(testInput) == 15)
-    check(part2(testInput) == 12)
+    val testLines = readLines(true)
+    check(part1(testLines) == 15)
+    check(part2(testLines) == 12)
 
-    val input = readLines("Day02")
-    println(part1(input))
-    println(part2(input))
+    val lines = readLines()
+    println(part1(lines))
+    println(part2(lines))
 }

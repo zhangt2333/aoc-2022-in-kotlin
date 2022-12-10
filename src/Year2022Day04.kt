@@ -19,11 +19,11 @@ fun main() {
         }.count { (a, b) -> a.overlap(b)}
     }
 
-    val testInput = readLines("Day04_test")
-    check(part1(testInput) == 2)
-    check(part2(testInput) == 4)
+    val testLines = readLines(true)
+    check(part1(testLines) == 2)
+    check(part2(testLines) == 4)
 
-    val input = readLines("Day04")
-    println(part1(input))
-    println(part2(input))
+    val lines = readLines()
+    println(part1(lines))
+    println(part2(lines))
 }

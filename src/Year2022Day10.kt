@@ -49,10 +49,10 @@ fun main() {
         }
     }
 
-    check(part1(readLines("Day10_test")) == 13140)
-    part2(readLines("Day10_test"))
+    check(part1(readLines(true)) == 13140)
+    part2(readLines(true))
 
-    val input = readLines("Day10")
-    println(part1(input))
-    part2(input)
+    val lines = readLines()
+    println(part1(lines))
+    part2(lines)
 }

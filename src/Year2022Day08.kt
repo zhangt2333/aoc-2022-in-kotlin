@@ -59,11 +59,11 @@ fun main() {
         }.max()
     }
 
-    val testInput = readLines("Day08_test")
-    check(part1(testInput) == 21)
-    check(part2(testInput) == 8)
+    val testLines = readLines(true)
+    check(part1(testLines) == 21)
+    check(part2(testLines) == 8)
 
-    val input = readLines("Day08")
-    println(part1(input))
-    println(part2(input))
+    val lines = readLines()
+    println(part1(lines))
+    println(part2(lines))
 }

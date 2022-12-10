@@ -92,11 +92,11 @@ fun main() {
         return parse(input).allDirectories.filter { it.size >= sizeToDelete }.minOf { it.size }
     }
 
-    val testInput = readLines("Day07_test")
-    check(part1(testInput) == 95437)
-    check(part2(testInput) == 24933642)
+    val testLines = readLines(true)
+    check(part1(testLines) == 95437)
+    check(part2(testLines) == 24933642)
 
-    val input = readLines("Day07")
-    println(part1(input))
-    println(part2(input))
+    val lines = readLines()
+    println(part1(lines))
+    println(part2(lines))
 }

@@ -21,8 +21,7 @@ fun main() {
         return data.topN(3).sum()
     }
 
-    val input = readInputs("Day01")
-
-    println(part1(input))
-    println(part2(input))
+    val text = readText()
+    println(part1(text))
+    println(part2(text))
 }

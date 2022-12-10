@@ -1,14 +1,40 @@
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
+import kotlin.io.path.Path
 
-/**
- * Reads lines from the given input txt file.
- */
-fun readLines(name: String) = File("input", "$name.txt")
-    .readLines()
+fun readLines(isTest: Boolean = false, testSuffix: String ="_test") =
+    readFile(isTest, testSuffix).readLines()
 
-fun readInputs(name: String) = File("input", "$name.txt").readText()
+fun readText(isTest: Boolean = false, testSuffix: String ="_test") =
+    readFile(isTest, testSuffix).readText()
+
+internal fun readFile(isTest: Boolean = false, testSuffix: String ="_test"): File =
+    getYearAndDay().let { (year, day) ->
+        Path("input", year, "Day$day${if (isTest) testSuffix else ""}.txt").toFile()
+    }
+
+internal fun CharSequence.indexAfter(string: String, startIndex: Int = 0, ignoreCase: Boolean = false): Int =
+    indexOf(string, startIndex, ignoreCase).let { return if (it == -1) -1 else it + string.length }
+
+inline fun CharSequence.indexOfFirst(startIndex: Int = 0, predicate: (Char) -> Boolean): Int {
+    for (index in startIndex until  this.length) {
+        if (predicate(this[index])) {
+            return index
+        }
+    }
+    return -1
+}
+
+fun getYearAndDay(): Pair<String, String> {
+    val mainClassName = Thread.currentThread().stackTrace.last().className
+    val yearStartIndex = mainClassName.indexAfter("Year")
+    val yearEndIndex = mainClassName.indexOfFirst(yearStartIndex) { !it.isDigit() }
+    val dayStartIndex = mainClassName.indexAfter("Day")
+    val dayEndIndex = mainClassName.indexOfFirst(dayStartIndex) { !it.isDigit() }
+    return mainClassName.substring(yearStartIndex, yearEndIndex) to
+            mainClassName.substring(dayStartIndex, dayEndIndex)
+}
 
 /**
  * Converts string to md5 hash.

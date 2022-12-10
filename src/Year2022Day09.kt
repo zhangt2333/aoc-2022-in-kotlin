@@ -56,11 +56,11 @@ fun main() {
         return solve(input, 10)
     }
 
-    check(part1(readLines("Day09_test")) == 13)
-    check(part2(readLines("Day09_test")) == 1)
-    check(part2(readLines("Day09_test2")) == 36)
+    check(part1(readLines(true)) == 13)
+    check(part2(readLines(true)) == 1)
+    check(part2(readLines(true, "_test2")) == 36)
 
-    val input = readLines("Day09")
-    println(part1(input))
-    println(part2(input))
+    val lines = readLines()
+    println(part1(lines))
+    println(part2(lines))
 }
