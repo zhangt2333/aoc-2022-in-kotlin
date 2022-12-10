@@ -52,8 +52,13 @@ fun assertEquals(expected: Any, actual: Any) {
     }
 }
 
+data class Point(
+    var x: Int,
+    var y: Int
+)
+
 fun main() {
-    val yearAndDay = "2021" to "01"
+    val yearAndDay = "2021" to "02"
     // generate files
     getFile(true, yearAndDay = yearAndDay).run { this.parentFile.mkdirs(); this.createNewFile() }
     getFile(yearAndDay = yearAndDay).run { this.parentFile.mkdirs(); this.createNewFile() }

@@ -1,30 +1,25 @@
 import kotlin.math.abs
 import kotlin.math.sign
 
-data class Point(
-    var x: Int,
-    var y: Int
-) {
-    fun move(char: Char) {
-        when (char) {
-            'U' -> y++
-            'D' -> y--
-            'L' -> x--
-            'R' -> x++
-        }
+internal fun Point.move(char: Char) {
+    when (char) {
+        'U' -> y++
+        'D' -> y--
+        'L' -> x--
+        'R' -> x++
     }
+}
 
-    fun follow(head: Point) {
-        val dx = head.x - x
-        val dy = head.y - y
-        if (abs(dx) > 1) {
-            x += dx - dx.sign
-            if (abs(dy) == 1) y += dy.sign
-        }
-        if (abs(dy) > 1) {
-            y += dy - dy.sign
-            if (abs(dx) == 1) x += dx.sign
-        }
+internal fun Point.follow(head: Point) {
+    val dx = head.x - x
+    val dy = head.y - y
+    if (abs(dx) > 1) {
+        x += dx - dx.sign
+        if (abs(dy) == 1) y += dy.sign
+    }
+    if (abs(dy) > 1) {
+        y += dy - dy.sign
+        if (abs(dx) == 1) x += dx.sign
     }
 }
 
