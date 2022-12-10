@@ -1,4 +1,5 @@
 import java.io.File
+import java.lang.IllegalStateException
 import java.math.BigInteger
 import java.security.MessageDigest
 import kotlin.io.path.Path
@@ -45,6 +46,12 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
     .toString(16)
     .padStart(32, '0')
 
+fun assertEquals(expected: Any, actual: Any) {
+    if (expected != actual) {
+        throw IllegalStateException("expected: $expected, given: $actual")
+    }
+}
+
 fun main() {
     val yearAndDay = "2021" to "01"
     // generate files
@@ -61,8 +68,8 @@ fun main() {
             }
 
             val testLines = readLines(true)
-            check(part1(testLines) == 0)
-            check(part2(testLines) == 0)
+            assertEquals(0, part1(testLines))
+            assertEquals(0, part2(testLines))
 
             val lines = readLines()
             println(part1(lines))
