@@ -4,13 +4,15 @@ import java.security.MessageDigest
 import kotlin.io.path.Path
 
 fun readLines(isTest: Boolean = false, testSuffix: String ="_test") =
-    readFile(isTest, testSuffix).readLines()
+    getFile(isTest, testSuffix).readLines()
 
 fun readText(isTest: Boolean = false, testSuffix: String ="_test") =
-    readFile(isTest, testSuffix).readText()
+    getFile(isTest, testSuffix).readText()
 
-internal fun readFile(isTest: Boolean = false, testSuffix: String ="_test"): File =
-    getYearAndDay().let { (year, day) ->
+internal fun getFile(isTest: Boolean = false,
+                     testSuffix: String ="_test",
+                     yearAndDay: Pair<String, String> = getYearAndDay()): File =
+    yearAndDay.let { (year, day) ->
         Path("input", year, "Day$day${if (isTest) testSuffix else ""}.txt").toFile()
     }
 
@@ -42,3 +44,29 @@ fun getYearAndDay(): Pair<String, String> {
 fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteArray()))
     .toString(16)
     .padStart(32, '0')
+
+fun main() {
+    val yearAndDay = "2021" to "01"
+    // generate files
+    getFile(true, yearAndDay = yearAndDay).run { this.parentFile.mkdirs(); this.createNewFile() }
+    getFile(yearAndDay = yearAndDay).run { this.parentFile.mkdirs(); this.createNewFile() }
+    File("src", "Year${yearAndDay.first}Day${yearAndDay.second}.kt").writeText("""
+        fun main() {
+            fun part1(lines: List<String>): Int {
+                return 0
+            }
+
+            fun part2(lines: List<String>): Int {
+                return 0
+            }
+
+            val testLines = readLines(true)
+            check(part1(testLines) == 0)
+            check(part2(testLines) == 0)
+
+            val lines = readLines()
+            println(part1(lines))
+            println(part2(lines))
+        }
+    """.trimIndent())
+}
