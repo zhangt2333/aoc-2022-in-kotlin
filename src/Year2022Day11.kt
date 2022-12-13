@@ -1,37 +1,36 @@
-internal class Monkey(text: String) {
-    val items: ArrayDeque<Long>
-    val operator: Char
-    val operand: String
-    val test: Int
-    val trueTo: Int
-    val falseTo: Int
-    var inspectTimes: Int = 0
+private class Monkey(text: String) {
+    val itemWorryLevels: MutableList<Long>
+    val operation: (Long) -> Long
+    val testDivisor: Int
+    val trueTarget: Int
+    val falseTarget: Int
+    var inspectTimes: Long = 0
 
     init {
         val lines = text.split("\n")
-        items = lines[1].substringAfter(": ")
+        itemWorryLevels = lines[1].substringAfter(": ")
             .split(", ").map { it.toLong() }.let { ArrayDeque(it) }
-        operator = lines[2].substringAfter("old ").substringBefore(" ")[0]
-        operand = lines[2].substringAfterLast(" ")
-        test = lines[3].substringAfter("by ").toInt()
-        trueTo = lines[4].substringAfter("monkey ").toInt()
-        falseTo = lines[5].substringAfter("monkey ").toInt()
+        val operator = lines[2].substringAfter("old ").substringBefore(" ")[0]
+        val operand = lines[2].substringAfterLast(" ")
+        operation = when (operator) {
+            '*' -> { old -> old * (operand.toLongOrNull() ?: old)}
+            '+' -> { old -> old + (operand.toLongOrNull() ?: old)}
+            else -> throw IllegalArgumentException()
+        }
+        testDivisor = lines[3].substringAfter("by ").toInt()
+        trueTarget = lines[4].substringAfter("monkey ").toInt()
+        falseTarget = lines[5].substringAfter("monkey ").toInt()
     }
 
     inline fun inspect(allMonkeys: List<Monkey>, worryLevelFunction: (Long) -> Long) {
-        while (items.isNotEmpty()) {
+        while (itemWorryLevels.isNotEmpty()) {
             inspectTimes++
-            val old = items.removeFirst()
-            val operand = if (operand == "old") old else operand.toLong()
-            val new = when (operator) {
-                '*' -> old * operand
-                '+' -> old + operand
-                else -> throw IllegalArgumentException()
-            }.let(worryLevelFunction)
-            if (new % test == 0L) {
-                allMonkeys[trueTo].items.addLast(new)
+            val worryLevel = itemWorryLevels.removeFirst()
+                .let(operation).let(worryLevelFunction)
+            if (worryLevel % testDivisor == 0L) {
+                allMonkeys[trueTarget].itemWorryLevels.add(worryLevel)
             } else {
-                allMonkeys[falseTo].items.addLast(new)
+                allMonkeys[falseTarget].itemWorryLevels.add(worryLevel)
             }
         }
     }
@@ -45,20 +44,18 @@ fun main() {
                 monkey.inspect(monkeys) { worryLevel -> worryLevel / 3 }
             }
         }
-        return monkeys.sortedByDescending { it.inspectTimes }
-            .take(2).fold(1L) { acc, monkey -> acc * monkey.inspectTimes }
+        return monkeys.asSequence().map { it.inspectTimes }.sortedDescending().take(2).product()
     }
 
     fun part2(text: String): Long {
         val monkeys = text.splitToSequence("\n\n").map { Monkey(it) }.toList()
-        val mod = monkeys.fold(1L) { acc, mon -> acc * mon.test }
+        val mod = monkeys.asSequence().map { it.testDivisor }.lcm()
         repeat(10000) {
             for (monkey in monkeys) {
                 monkey.inspect(monkeys) { worryLevel -> worryLevel % mod }
             }
         }
-        return monkeys.sortedByDescending { it.inspectTimes }
-            .take(2).fold(1L) { acc, monkey -> acc * monkey.inspectTimes }
+        return monkeys.asSequence().map { it.inspectTimes }.sortedDescending().take(2).product()
     }
 
     val testText = readText(true)

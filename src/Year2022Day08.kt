@@ -1,7 +1,4 @@
-internal val <E> List<List<E>>.rowSize get() = size
-internal val <E> List<List<E>>.columnSize get() = first().size
-
-internal inline fun <T> Iterable<T>.countDoWhile(predicate: (T) -> Boolean): Int {
+private inline fun <T> Iterable<T>.countDoWhile(predicate: (T) -> Boolean): Int {
     var counter = 0
     for (item in this) {
         counter++
