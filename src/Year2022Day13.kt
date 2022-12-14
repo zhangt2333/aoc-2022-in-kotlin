@@ -42,15 +42,11 @@ fun main() {
     }
 
     fun part1(lines: List<String>): Int {
-        var ans = 0
-        for (i in lines.indices step 3) {
-            val l1 = parse(lines[i])
-            val l2 = parse(lines[i + 1])
-            if (compare(l1, l2) <= 0) {
-                ans += i / 3 + 1
-            }
-        }
-        return ans
+        return lines.asSequence()
+            .chunked(2)
+            .map { compare(parse(it[0]), parse(it[1])) <= 0 }
+            .mapIndexed { index, comparison -> if (comparison) index + 1 else 0 }
+            .sum()
     }
 
     fun part2(lines: List<String>): Int {
