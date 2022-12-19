@@ -98,7 +98,7 @@ fun Sequence<Long>.product(): Long = reduce { acc, i -> acc * i }
 
 
 fun main() {
-    val yearAndDay = "2022" to "14"
+    val yearAndDay = "2022" to "15"
     // generate files
     getFile(true, yearAndDay = yearAndDay).run { this.parentFile.mkdirs(); this.createNewFile() }
     getFile(yearAndDay = yearAndDay).run { this.parentFile.mkdirs(); this.createNewFile() }
